@@ -10,6 +10,7 @@ import getSubFeed from './getSubFeed.js';
 import type { Request, ExecutionContext } from '@cloudflare/workers-types';
 
 const ALLOWED_ORIGINS = [
+  'https://wtube.netlify.app',
   'https://ytify.pp.ua',
   'https://ytify.netlify.app',
   'https://ytify.zeabur.app',
