@@ -1,4 +1,4 @@
-import { playerStore, setPlayerStore } from '@stores';
+import { setPlayerStore } from '@stores';
 
 const instances = [
   "https://wtube-api.tahsin-hassan-2627.workers.dev"
@@ -6,16 +6,14 @@ const instances = [
 
 export default async function(
   id: string,
-  prefetch: boolean = false,
+  _prefetch: boolean = false,
   signal?: AbortSignal
 ): Promise<Invidious | Record<'error' | 'message', string>> {
 
-  const fetchData = async (
-    proxy: string
-  ): Promise<Invidious> => {
+  try {
 
     const res = await fetch(
-      `${proxy}/streams/${id}`,
+      `${instances[0]}/streams/${id}`,
       {
         signal,
         headers: {
@@ -25,8 +23,9 @@ export default async function(
     );
 
     if (!res.ok) {
+
       throw new Error(
-        `HTTP error! status: ${res.status}`
+        `HTTP ${res.status}`
       );
     }
 
@@ -34,20 +33,13 @@ export default async function(
 
     if (
       !data ||
-      !('adaptiveFormats' in data)
+      !Array.isArray(data.adaptiveFormats)
     ) {
+
       throw new Error(
         'Invalid response'
       );
     }
-
-    return data;
-  };
-
-  try {
-
-    const data =
-      await fetchData(instances[0]);
 
     setPlayerStore(
       'proxy',
@@ -63,7 +55,7 @@ export default async function(
     return {
       error: 'Stream fetch failed',
       message:
-        'Failed to fetch stream data'
+        'Failed to fetch stream data from all available instances'
     };
   }
 }
