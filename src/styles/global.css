@@ -1,62 +1,280 @@
-@import 'open-props/normalize.min.css';
-@import 'patterns.css';
-@import 'layout.css';
-@import 'footer.css';
-@import 'remixicon.css';
-@import 'tooltips.css';
-
 :root {
-  --source: initial;
-  --schemeMultiplier: initial;
-  --bg: initial;
-  --text: initial;
-  --chroma: 0;
-  --scheme: color-mix(in srgb, oklch(from var(--source) 70% calc(c * var(--chroma)) h), var(--bg) 85%);
-  --onBg: color-mix(in srgb, oklch(from var(--source) 85% calc(c * var(--chroma)) h), var(--bg) 85%);
-  --onBg2: color-mix(in srgb, oklch(from var(--source) 80% calc(35% * var(--chroma)) h), var(--bg) 70%);
-  --blurMix: color-mix(in srgb, oklch(from var(--onBg) l calc(c * var(--chroma)) / 0.1), var(--bg) 40%);
-  --text2: color-mix(in srgb, oklch(from var(--source) 50% calc(80% * var(--chroma)) h), var(--text) 75%);
-  --gap: var(--size-fluid-2);
-  --borderColor: oklch(from var(--text) l c h / 0.2);
-  --border: var(--border-size-1) solid var(--borderColor);
-  --roundness: 0.4rem;
-  --blur: blur(var(--size-px-3));
-  --player-bg: none;
-  --player-bp: 0 0;
-  --landscapeSections: 2;
-  --trueBg: var(--bg);
-  --font: ui-rounded, Segoe UI, source-sans-pro, Inter, Noto Sans, Oxygen, Calibri, Cantarell, Ubuntu, Roboto, system-ui, Open Sans, Helvetica Neue, sans-serif;
+
+  --wtube-bg: #0b0b0f;
+  --wtube-surface: rgba(24, 24, 28, 0.72);
+  --wtube-surface-solid: #18181c;
+  --wtube-elevated: rgba(34, 34, 38, 0.92);
+
+  --wtube-border: rgba(255,255,255,0.08);
+  --wtube-border-strong: rgba(255,255,255,0.12);
+
+  --wtube-text: #ffffff;
+  --wtube-text-secondary: #b0b0bb;
+  --wtube-text-muted: #7a7a85;
+
+  --wtube-accent: #ff0033;
+  --wtube-accent-soft: rgba(255, 0, 51, 0.18);
+
+  --wtube-radius-sm: 14px;
+  --wtube-radius-md: 18px;
+  --wtube-radius-lg: 26px;
+  --wtube-radius-xl: 34px;
+
+  --wtube-shadow:
+    0 10px 40px rgba(0,0,0,0.38);
+
+  --wtube-blur: blur(22px);
+
+  --safe-top:
+    env(safe-area-inset-top);
+
+  --safe-bottom:
+    env(safe-area-inset-bottom);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
 html {
-  height: 100dvh;
-  background: var(--trueBg);
+
+  overscroll-behavior-y: none;
+  scroll-behavior: smooth;
+
+  background:
+    var(--wtube-bg);
+
+  color:
+    var(--wtube-text);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    sans-serif;
 }
 
 body {
-  height: 100dvh;
-  font-family: var(--font);
-  -webkit-font-smoothing: antialiased;
+
+  margin: 0;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255,0,51,0.10),
+      transparent 42%
+    ),
+    var(--wtube-bg);
+
+  color:
+    var(--wtube-text);
+
+  overflow-x: hidden;
+
+  min-height: 100vh;
+
+  padding-top:
+    var(--safe-top);
+
+  padding-bottom:
+    calc(
+      110px +
+      var(--safe-bottom)
+    );
+
+  text-rendering:
+    optimizeLegibility;
+
+  -webkit-font-smoothing:
+    antialiased;
 }
 
-select {
-  font-family: inherit;
-  background: none;
-  outline: none;
-  color: var(--text);
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
 
-  option,
-  optgroup {
-    cursor: pointer;
-    background: var(--bg);
-  }
+button,
+input,
+textarea {
+  font: inherit;
 }
 
 a {
-  color: var(--text);
+  color: inherit;
+  text-decoration: none;
 }
 
-i {
-  cursor: pointer;
-  position: relative;
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+nav.wtube-dock {
+
+  position: fixed;
+
+  left: 50%;
+  bottom:
+    calc(
+      18px +
+      var(--safe-bottom)
+    );
+
+  transform:
+    translateX(-50%);
+
+  width:
+    calc(100% - 28px);
+
+  max-width: 520px;
+
+  height: 74px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-around;
+
+  padding: 10px 14px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(18,18,22,0.72);
+
+  backdrop-filter:
+    var(--wtube-blur);
+
+  -webkit-backdrop-filter:
+    var(--wtube-blur);
+
+  border:
+    1px solid var(--wtube-border);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.42);
+
+  z-index: 9999;
+}
+
+nav.wtube-dock button {
+
+  appearance: none;
+  border: none;
+  background: transparent;
+
+  width: 82px;
+  height: 58px;
+
+  border-radius:
+    999px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  color:
+    var(--wtube-text-secondary);
+
+  transition:
+    all 0.24s ease;
+}
+
+nav.wtube-dock button.active {
+
+  background:
+    rgba(255,255,255,0.08);
+
+  color:
+    var(--wtube-text);
+}
+
+nav.wtube-dock button:active {
+
+  transform:
+    scale(0.92);
+}
+
+nav.wtube-dock .nav-icon-wrap {
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    all 0.22s ease;
+}
+
+nav.wtube-dock button.active .nav-icon-wrap {
+
+  background:
+    var(--wtube-accent-soft);
+
+  box-shadow:
+    0 0 18px rgba(255,0,51,0.24);
+}
+
+nav.wtube-dock i {
+
+  font-size: 22px;
+}
+
+nav.wtube-dock span {
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.2px;
+}
+
+.glass-surface {
+
+  background:
+    var(--wtube-surface);
+
+  backdrop-filter:
+    var(--wtube-blur);
+
+  -webkit-backdrop-filter:
+    var(--wtube-blur);
+
+  border:
+    1px solid var(--wtube-border);
+
+  box-shadow:
+    var(--wtube-shadow);
+}
+
+.fade-enter-active,
+.fade-exit-active {
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.fade-enter,
+.fade-exit-to {
+
+  opacity: 0;
+
+  transform:
+    translateY(8px);
 }
