@@ -1,8 +1,11 @@
 import { playerStore, setPlayerStore } from '@stores';
 
 const instances = [
-  "https://yt.omada.cafe",
-  "https://lekker.gay"
+  'https://invidious.fdn.fr',
+  'https://invidious.nerdvpn.de',
+  'https://vid.puffyan.us',
+  'https://yt.artemislena.eu',
+  'https://invidious.projectsegfau.lt'
 ];
 
 export default async function(
@@ -11,62 +14,107 @@ export default async function(
   signal?: AbortSignal
 ): Promise<Invidious | Record<'error' | 'message', string>> {
 
+  const fetchData = async (
+    proxy: string
+  ): Promise<Invidious> => {
 
-  const fetchData = async (proxy: string): Promise<Invidious> => {
-    if (!proxy) id += Build;
-    const res = await fetch(`${proxy}/api/v1/videos/${id}`, { signal });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const target =
+      `${proxy}/api/v1/videos/${id}`;
+
+    const res = await fetch(target, {
+      signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        `HTTP ${res.status}`
+      );
+    }
+
     const data = await res.json();
 
-    if (!data || !('adaptiveFormats' in data) || !Array.isArray(data.adaptiveFormats)) {
-      throw new Error(data?.error || 'Invalid response: adaptiveFormats missing or not an array');
+    if (
+      !data ||
+      !Array.isArray(data.adaptiveFormats)
+    ) {
+      throw new Error(
+        'Invalid adaptiveFormats'
+      );
     }
 
-    if (!data.adaptiveFormats.every((f: { type: string }) => typeof f.type === 'string')) {
-      throw new Error('Invalid response: formats missing type property');
-    }
+    const audioFormats =
+      data.adaptiveFormats.filter(
+        (f: any) =>
+          typeof f.type === 'string' &&
+          f.type.startsWith('audio')
+      );
 
-    if (!data.adaptiveFormats.some((f: { type: string }) => f.type.startsWith('audio'))) {
-      throw new Error('Invalid response: no audio streams found');
+    if (!audioFormats.length) {
+      throw new Error(
+        'No audio streams'
+      );
     }
 
     return data;
   };
 
-  // 1. Try current proxy first if available
+  // Current proxy first
   if (playerStore.proxy || prefetch) {
-    const p = playerStore.proxy || instances[0];
+
+    const p =
+      playerStore.proxy || instances[0];
+
     try {
+
       return await fetchData(p);
+
     } catch (e) {
-      if (prefetch) return { error: 'Prefetch failed', message: (e as Error).message };
-      console.warn(`Current proxy ${p} failed, starting retries...`);
+
+      if (prefetch) {
+        return {
+          error: 'Prefetch failed',
+          message: (e as Error).message
+        };
+      }
+
+      console.warn(
+        `Proxy failed: ${p}`
+      );
     }
   }
 
-  // 2. One by one retry through all instances
+  // Rotate instances
   for (const proxy of instances) {
-    if (proxy === playerStore.proxy) continue;
+
+    if (proxy === playerStore.proxy)
+      continue;
+
     try {
-      const data = await fetchData(proxy);
-      setPlayerStore('proxy', proxy);
+
+      const data =
+        await fetchData(proxy);
+
+      setPlayerStore(
+        'proxy',
+        proxy
+      );
+
       return data;
+
     } catch (e) {
-      console.warn(`Proxy ${proxy} failed, trying next...`);
+
+      console.warn(
+        `Failed proxy: ${proxy}`
+      );
     }
   }
 
-  // 3. Last resort: Emergency Fallback (Local Edge Function)
-  if (!prefetch) {
-    try {
-      console.warn('All proxies failed, attempting emergency fallback...');
-      const data = await fetchData('');
-      setPlayerStore('proxy', ''); // reset proxy to use local fallback
-      return data;
-    } catch (e) {
-      console.error('Emergency fallback failed:', e);
-    }
-  }
-
-  return { error: 'All proxies failed', message: 'Failed to fetch stream data from all available instances' };
+  return {
+    error: 'All proxies failed',
+    message:
+      'Failed to fetch stream data from all available instances'
+  };
 }
