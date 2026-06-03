@@ -1,10 +1,7 @@
 import { playerStore, setPlayerStore } from '@stores';
 
 const instances = [
-  "https://invidious.fdn.fr",
-  "https://vid.puffyan.us",
-  "https://invidious.nerdvpn.de",
-  "https://yewtu.be"
+  "https://wtube-api.tahsin-hassan-2627.workers.dev"
 ];
 
 export default async function(
@@ -18,7 +15,7 @@ export default async function(
   ): Promise<Invidious> => {
 
     const res = await fetch(
-      `${proxy}/api/v1/videos/${id}`,
+      `${proxy}/streams/${id}`,
       {
         signal,
         headers: {
@@ -37,84 +34,36 @@ export default async function(
 
     if (
       !data ||
-      !('adaptiveFormats' in data) ||
-      !Array.isArray(data.adaptiveFormats)
+      !('adaptiveFormats' in data)
     ) {
       throw new Error(
-        data?.error ||
         'Invalid response'
-      );
-    }
-
-    if (
-      !data.adaptiveFormats.some(
-        (f: { type: string }) =>
-          f.type?.startsWith('audio')
-      )
-    ) {
-      throw new Error(
-        'No audio streams found'
       );
     }
 
     return data;
   };
 
-  // Try current proxy first
-  if (playerStore.proxy || prefetch) {
+  try {
 
-    const p =
-      playerStore.proxy ||
-      instances[0];
+    const data =
+      await fetchData(instances[0]);
 
-    try {
+    setPlayerStore(
+      'proxy',
+      instances[0]
+    );
 
-      return await fetchData(p);
+    return data;
 
-    } catch (e) {
+  } catch (e) {
 
-      if (prefetch) {
-        return {
-          error: 'Prefetch failed',
-          message: (e as Error).message
-        };
-      }
+    console.error(e);
 
-      console.warn(
-        `Current proxy failed: ${p}`
-      );
-    }
+    return {
+      error: 'Stream fetch failed',
+      message:
+        'Failed to fetch stream data'
+    };
   }
-
-  // Rotate through instances
-  for (const proxy of instances) {
-
-    if (proxy === playerStore.proxy)
-      continue;
-
-    try {
-
-      const data =
-        await fetchData(proxy);
-
-      setPlayerStore(
-        'proxy',
-        proxy
-      );
-
-      return data;
-
-    } catch (e) {
-
-      console.warn(
-        `Proxy failed: ${proxy}`
-      );
-    }
-  }
-
-  return {
-    error: 'All proxies failed',
-    message:
-      'Failed to fetch stream data from all available instances'
-  };
 }
