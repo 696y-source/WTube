@@ -1,11 +1,10 @@
 import { playerStore, setPlayerStore } from '@stores';
 
 const instances = [
-  'https://invidious.fdn.fr',
-  'https://invidious.nerdvpn.de',
-  'https://vid.puffyan.us',
-  'https://yt.artemislena.eu',
-  'https://invidious.projectsegfau.lt'
+  "https://invidious.fdn.fr",
+  "https://vid.puffyan.us",
+  "https://invidious.nerdvpn.de",
+  "https://yt.artemislena.eu"
 ];
 
 export default async function(
