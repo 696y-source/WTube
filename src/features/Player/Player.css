@@ -1,276 +1,229 @@
-@import './slider.css';
-
-#playerSection {
+.player {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8,8,10,0.96),
+      rgba(14,14,18,0.98)
+    );
+  backdrop-filter:
+    blur(28px);
+  -webkit-backdrop-filter:
+    blur(28px);
+  color:
+    var(--wtube-text);
+  overflow: hidden;
+}
+.player::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255,0,51,0.12),
+      transparent 36%
+    );
+  pointer-events: none;
+}
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding:
+    calc(16px + var(--safe-top))
+    18px
+    12px;
+  z-index: 2;
+}
+.player-header button {
+  width: 42px;
+  height: 42px;
+  border-radius:
+    50%;
+  border: none;
+  background:
+    rgba(255,255,255,0.06);
+  color:
+    var(--wtube-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter:
+    blur(18px);
+  -webkit-backdrop-filter:
+    blur(18px);
+  transition:
+    all 0.22s ease;
+}
+.player-header button:active {
+  transform:
+    scale(0.92);
+}
+.player-header i {
+  font-size: 1.2rem;
+}
+.player-artwork {
   position: relative;
-
-  & * {
-    z-index: 2;
-  }
-
-  & div.bg-pane {
-    background-color: hsl(from var(--onBg) h s l / 0.8);
-    backdrop-filter: blur(var(--size-px-1));
-    z-index: 1;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-  }
-
-  & div.bg-image {
-    position: absolute;
-    width: 100%;
-    height: 100dvh;
-    top: 0;
-    left: 0;
-    background-image: var(--player-bg);
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: auto 100%;
-    background-position: var(--player-bp);
-    transition: background-position 0.3s ease;
-    z-index: 0;
-
-  }
-
-  header {
-    z-index: 3;
-  }
-
-  .ri-more-2-fill {
-    margin: auto 0;
-    padding: 0 var(--size-00);
-    opacity: 1;
-  }
-
-  & i.on {
-    background-color: var(--text2);
-    color: var(--onBg2);
-  }
-
-
-
+  width: calc(100% - 36px);
+  max-width: 420px;
+  margin: 18px auto 28px;
+  aspect-ratio: 1 / 1;
+  border-radius:
+    34px;
+  overflow: hidden;
+  background:
+    #18181c;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.45);
+  border:
+    1px solid rgba(255,255,255,0.08);
 }
-
-#playerSection article {
+.player-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.player-content {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  gap: 22px;
+  padding:
+    0 24px
+    calc(32px + var(--safe-bottom));
+  z-index: 2;
+}
+.player-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.player-title {
+  font-size: 1.5rem;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  color:
+    var(--wtube-text);
+}
+.player-author {
+  color:
+    var(--wtube-text-secondary);
+  font-size: 1rem;
+  font-weight: 550;
+}
+.player-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.player-progress input[type="range"] {
   width: 100%;
-  margin: auto 0;
-
-
-  button {
-    background: none;
-  }
-
-  i,
-  button,
-  label {
-    font-size: var(--font-size-4);
-  }
-
-
-  img {
-    margin: 0 auto;
-    border-radius: var(--roundness);
-    box-shadow: var(--shadow-2);
-    width: 100%;
-  }
-
-
-  @media(orientation:landscape) {
-    height: 100%;
-
-    img {
-      width: 50dvh;
-    }
-
-    .lyrics {
-      text-align: center;
-    }
-  }
-
-  &:has(>div.watcher) {
-    margin: auto;
-    justify-content: center;
-  }
-
+  appearance: none;
+  height: 5px;
+  border-radius:
+    999px;
+  background:
+    rgba(255,255,255,0.12);
+  overflow: hidden;
 }
-
-
-.mediaDetails {
-
-  margin: var(--size-3) 0;
-
-  a {
-    display: block;
-    font-size: var(--size-4);
-    font-weight: var(--font-weight-6);
-    color: inherit;
-    text-decoration-color: inherit;
-  }
-
-  p {
-    display: inline;
-    font-size: var(--size-3);
-  }
-
-  @media(orientation:landscape) {
-    text-align: center;
-  }
-
+.player-progress input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius:
+    50%;
+  background:
+    white;
+  box-shadow:
+    -400px 0 0 400px var(--wtube-accent);
 }
-
-
-.slider {
-  input {
-    width: 100%;
-    color: var(--text2);
-  }
-
-  margin-bottom:var(--size-2);
-
-  div {
-    display: flex;
-    justify-content: space-between;
-
-    p {
-      font-size: var(--font-size-0);
-      letter-spacing: var(--font-letterspacing-2);
-      font-weight: var(--font-weight-7);
-      opacity: 0.8;
-    }
-
-    #fullDuration {
-      text-align: right;
-    }
-  }
-}
-
-.topShelf {
+.player-time {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-
-  >p {
-    overflow: clip;
-    text-overflow: ellipsis;
-  }
-
-  .right-group {
-    margin-right: var(--size-4);
-    margin-top: 0;
-  }
-
-
+  color:
+    var(--wtube-text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
 }
-
-
-.mainShelf {
+.player-controls {
   display: flex;
-  justify-content: space-between;
-
-  :first-child {
-    animation: var(--animation-slide-in-down) forwards;
-  }
-
-  :last-child {
-    animation: var(--animation-slide-in-up) forwards;
-
-  }
-
-  button {
-    opacity: 0.9;
-    font-size: var(--font-size-4) !important;
-    font-weight: var(--font-weight-1) !important;
-  }
-
-  #playButton {
-    transform: scale(1.5);
-  }
-
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 8px;
 }
-
-.bottomShelf {
+.player-controls button {
+  appearance: none;
+  border: none;
   display: flex;
-  justify-content: space-between;
-  margin-top: var(--size-5);
-  margin-bottom: var(--size-9);
-
-  i {
-    font-size: var(--font-size-2) !important;
-    padding: 0 var(--size-2);
-    border-radius: var(--roundness);
-    opacity: 0.7;
-    font-weight: var(--font-weight-6);
-  }
-
-
-  select {
-    background: none;
-    width: calc(var(--size-8) + var(--size-2));
-    padding: 0;
-    margin: 0;
-    appearance: none;
-    opacity: 0.5;
-    font-size: var(--font-size-0);
-    letter-spacing: var(--font-letterspacing-2);
-    font-weight: var(--font-weight-6);
-  }
-
-  #volumeChanger {
-    text-align: right;
-  }
+  align-items: center;
+  justify-content: center;
+  border-radius:
+    50%;
+  transition:
+    all 0.22s ease;
 }
-
-.lyrics {
-  aspect-ratio: 1;
-  background-color: var(--onBg);
-  border-radius: var(--roundness);
-  padding: 0 var(--size-3);
-  overflow: scroll;
-
-  p {
-    margin: var(--size-5) 0;
-    font-size: var(--font-size-1);
-    opacity: 0.7;
-
-    &.active {
-      font-weight: var(--font-weight-6);
-      opacity: 1;
-    }
-  }
+.player-controls button:active {
+  transform:
+    scale(0.9);
 }
-
-
-.watcher {
-
-  video {
-    width: 100%;
-    aspect-ratio: 16/9;
-    border-radius: var(--roundness);
-  }
-
-  select {
-    font-size: var(--font-size-2) !important;
-    width: 50%;
-    text-align: center;
-    appearance: none;
-  }
-
-  button {
-    font-size: var(--font-size-2) !important;
-    width: 50%;
-  }
-
-
-  p {
-    font-size: var(--font-size-1) !important;
-    font-style: italic;
-    opacity: 0.5;
-  }
+.player-controls .secondary {
+  width: 54px;
+  height: 54px;
+  background:
+    rgba(255,255,255,0.06);
+  color:
+    var(--wtube-text);
+}
+.player-controls .secondary i {
+  font-size: 1.4rem;
+}
+.player-controls .primary {
+  width: 78px;
+  height: 78px;
+  background:
+    linear-gradient(
+      180deg,
+      #ff174d,
+      #ff0033
+    );
+  color: white;
+  box-shadow:
+    0 16px 42px rgba(255,0,51,0.42);
+}
+.player-controls .primary i {
+  font-size: 2rem;
+}
+.player-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 8px;
+}
+.player-actions button {
+  border: none;
+  background: transparent;
+  color:
+    var(--wtube-text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  transition:
+    all 0.22s ease;
+}
+.player-actions button:active {
+  transform:
+    scale(0.92);
+}
+.player-actions i {
+  font-size: 1.3rem;
 }
