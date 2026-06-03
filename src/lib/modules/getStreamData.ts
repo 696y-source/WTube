@@ -4,7 +4,7 @@ const instances = [
   "https://invidious.fdn.fr",
   "https://vid.puffyan.us",
   "https://invidious.nerdvpn.de",
-  "https://yt.artemislena.eu"
+  "https://yewtu.be"
 ];
 
 export default async function(
@@ -17,19 +17,19 @@ export default async function(
     proxy: string
   ): Promise<Invidious> => {
 
-    const target =
-      `${proxy}/api/v1/videos/${id}`;
-
-    const res = await fetch(target, {
-      signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0'
+    const res = await fetch(
+      `${proxy}/api/v1/videos/${id}`,
+      {
+        signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0'
+        }
       }
-    });
+    );
 
     if (!res.ok) {
       throw new Error(
-        `HTTP ${res.status}`
+        `HTTP error! status: ${res.status}`
       );
     }
 
@@ -37,34 +37,35 @@ export default async function(
 
     if (
       !data ||
+      !('adaptiveFormats' in data) ||
       !Array.isArray(data.adaptiveFormats)
     ) {
       throw new Error(
-        'Invalid adaptiveFormats'
+        data?.error ||
+        'Invalid response'
       );
     }
 
-    const audioFormats =
-      data.adaptiveFormats.filter(
-        (f: any) =>
-          typeof f.type === 'string' &&
-          f.type.startsWith('audio')
-      );
-
-    if (!audioFormats.length) {
+    if (
+      !data.adaptiveFormats.some(
+        (f: { type: string }) =>
+          f.type?.startsWith('audio')
+      )
+    ) {
       throw new Error(
-        'No audio streams'
+        'No audio streams found'
       );
     }
 
     return data;
   };
 
-  // Current proxy first
+  // Try current proxy first
   if (playerStore.proxy || prefetch) {
 
     const p =
-      playerStore.proxy || instances[0];
+      playerStore.proxy ||
+      instances[0];
 
     try {
 
@@ -80,12 +81,12 @@ export default async function(
       }
 
       console.warn(
-        `Proxy failed: ${p}`
+        `Current proxy failed: ${p}`
       );
     }
   }
 
-  // Rotate instances
+  // Rotate through instances
   for (const proxy of instances) {
 
     if (proxy === playerStore.proxy)
@@ -106,7 +107,7 @@ export default async function(
     } catch (e) {
 
       console.warn(
-        `Failed proxy: ${proxy}`
+        `Proxy failed: ${proxy}`
       );
     }
   }
